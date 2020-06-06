@@ -1,7 +1,6 @@
 (uiop:define-package :ppg/utils
   (:use :cl)
-  (:export
-   #:defun*))
+  (:export #:defun*))
 
 (in-package :ppg/utils)
 
