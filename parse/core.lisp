@@ -1,5 +1,5 @@
-(uiop:define-package :ppg/parse/base
+(uiop:define-package :ppg/parse/core
   (:use :cl)
   (:export))
 
-(in-package :ppg/parse/base)
+(in-package :ppg/parse/core)
