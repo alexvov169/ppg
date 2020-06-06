@@ -1,9 +1,10 @@
-(uiop:define-package :ppg/core
+(uiop:define-package :ppg/main
     (:nicknames :ppg)
   (:use :cl)
   (:use :ppg/utils)
   (:import-from :alexandria
-		#:alist-hash-table)
+		#:alist-hash-table
+		#:iota)
   (:export
    #:.top
    #:.let
@@ -50,14 +51,18 @@
 (defstruct lazy-if
   test then else)
 
+(defstruct lazy-case
+  table)
+
 (defun .if (test then else)
-  (alist-hash-table
-   (loop :for char :in (all 'character)
-	 :if (funcall test char)
-	   :collect (cons char then)
-	 :else
-	   :collect (cons char else)))
-  (make-lazy-if :test test :then then :else else))
+  (make-lazy-case
+   :table
+   (alist-hash-table
+    (loop :for char :in (all 'character)
+	  :if (funcall test char)
+	    :collect (cons char then)
+	  :else
+	    :collect (cons char else)))))
 
 (defstruct lazy-result
   function)
@@ -139,10 +144,21 @@
 	       (.not-matched merged-else))))))
 
 (defun .or (&rest parsers)
-  (loop :for parser :in parsers
-	:do (loop :for char :in (all 'character)
-		  :do ))
   ;; (apply #'.or-aux nil parser parsers)
+  (let* ((i->parser (alist-hash-table
+		     (mapcar (lambda (i parser)
+			       (cons i ))
+			     (iota (length parsers))
+			     parsers)))
+	 (maybe-disjoint-case-table
+	   (alist-hash-table
+	    (mapcar (lambda (char)
+		      (cons char
+			    (remove-if-not (lambda (parser)
+					     (gethash char (lazy-case-table parser)))
+					   parsers)))
+		    (all 'character))))
+	 (non-disjoint-parsers (loop ))))
   )
 
 (defun .add (fn parser-expr1 parser-expr2)
@@ -209,8 +225,9 @@
   (.is-char "alpha" #'alpha-char-p))
 
 (defun .alnum ()
-  (.or (.digit)
-       (.alpha)))
+  (.is-char "alpha" (lambda (char)
+		      (or (alpha-char-p char)
+			  (digit-char-p char)))))
 
 ;; (defun run (parser input)
 ;;   ())
