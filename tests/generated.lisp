@@ -1,9 +1,8 @@
-(uiop:define-package :ppg/tests
+(uiop:define-package :ppg/tests/generated
   (:use :cl :rove)
-  (:use :ppg/core)
-  (:export))
+  (:use :ppg/generate/all))
 
-(in-package :ppg/tests)
+(in-package :ppg/tests/generated)
 
 
 (defparameter *dc*
